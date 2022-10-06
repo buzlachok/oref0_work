@@ -46,16 +46,9 @@ if cat /etc/os-release | grep 'PRETTY_NAME="Debian GNU/Linux 8 (jessie)"' &> /de
     echo "Jubilinux 0.2.0, based on Debian Jessie, is no longer receiving security or software updates!"
 fi
 
-#Workaround for Jubilinux to install nodejs/npm from nodesource
-if getent passwd edison &> /dev/null; then
-    #Use nodesource setup script to add nodesource repository to sources.list.d
-    curl -sL https://deb.nodesource.com/setup_8.x | bash -
-fi
-
-#dpkg -P nodejs nodejs-dev
 # TODO: remove the `-o Acquire::ForceIPv4=true` once Debian's mirrors work reliably over IPv6
 apt-get -o Acquire::ForceIPv4=true update && apt-get -o Acquire::ForceIPv4=true -y dist-upgrade && apt-get -o Acquire::ForceIPv4=true -y autoremove
-apt-get -o Acquire::ForceIPv4=true update && apt-get -o Acquire::ForceIPv4=true install -y sudo strace tcpdump screen acpid vim python-pip locate ntpdate ntp
+apt-get -o Acquire::ForceIPv4=true update && apt-get -o Acquire::ForceIPv4=true install -y sudo strace tcpdump screen acpid vim locate ntpdate ntp
 #check if edison user exists before trying to add it to groups
 
 grep "PermitRootLogin yes" /etc/ssh/sshd_config || echo "PermitRootLogin yes" >>/etc/ssh/sshd_config
@@ -72,8 +65,8 @@ fi
 sed -i "s/daily/hourly/g" /etc/logrotate.conf
 sed -i "s/#compress/compress/g" /etc/logrotate.conf
 
-curl -s https://raw.githubusercontent.com/workingopenaps/oref0/$BRANCH/bin/openaps-packages.sh | bash -
-mkdir -p ~/src; cd ~/src && ls -d oref0 && (cd oref0 && git checkout $BRANCH && git pull) || git clone https://github.com/workingopenaps/oref0.git
+curl -s https://raw.githubusercontent.com/openaps/oref0/$BRANCH/bin/openaps-packages.sh | bash -
+mkdir -p ~/src; cd ~/src && ls -d oref0 && (cd oref0 && git checkout $BRANCH && git pull) || git clone https://github.com/openaps/oref0.git
 echo "Press Enter to run oref0-setup with the current release ($BRANCH branch) of oref0,"
 read -p "or press ctrl-c to cancel. " -r
 cd && ~/src/oref0/bin/oref0-setup.sh
